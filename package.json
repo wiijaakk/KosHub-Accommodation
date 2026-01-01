@@ -11,9 +11,19 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express": "^5.2.1"
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiijaakk/KosHub-Accommodation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wiijaakk/KosHub-Accommodation/issues"
+  },
+  "homepage": "https://github.com/wiijaakk/KosHub-Accommodation#readme"
 }
