@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     const user_id = req.user.id;
-    const { room_id, start_date, end_date } = req.body;
+    const { accommodation_id, start_date, end_date } = req.body;
     
     try {
         const activeBooking = await pool.query(
@@ -32,9 +32,9 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'You already have an active booking' });
         }
 
-        const roomResult = await pool.query('SELECT price FROM rooms WHERE id = $1', [room_id]);
-        if (roomResult.rows.length === 0) {
-            return res.status(404).json({ message: 'Room not found' });
+        const accResult = await pool.query('SELECT price FROM accommodations WHERE accommodation_id = $1', [accommodation_id]);
+        if (accResult.rows.length === 0) {
+            return res.status(404).json({ message: 'Accommodation not found' });
         }
         
         const userResult = await pool.query('SELECT discount_rate FROM users WHERE id = $1', [user_id]);
@@ -42,14 +42,14 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const base_price = roomResult.rows[0].price;
+        const base_price = accResult.rows[0].price;
         const discount_rate = userResult.rows[0].discount_rate || 0;
         const discount_applied = base_price * discount_rate;
         const final_price = base_price - discount_applied;
 
         const result = await pool.query(
-            'INSERT INTO bookings (room_id, user_id, base_price, discount_applied, final_price, start_date, end_date, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-            [room_id, user_id, base_price, discount_applied, final_price, start_date, end_date, 'PENDING']
+            'INSERT INTO bookings (accommodation_id, user_id, base_price, discount_applied, final_price, start_date, end_date, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [accommodation_id, user_id, base_price, discount_applied, final_price, start_date, end_date, 'PENDING']
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -62,7 +62,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query(
-        'SELECT * FROM bookings WHERE bookings.id=$1',
+        'SELECT * FROM bookings WHERE bookings.booking_id=$1',
         [id]
         );
         if (result.rows.length === 0) {
@@ -78,25 +78,25 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const client = await pool.connect();
     const {id} = req.params;
-    const { room_id, status } = req.body;
+    const { accommodation_id, status } = req.body;
         try {
             await client.query('BEGIN');
             const bookingResult = await client.query(
-                'UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *',
+                'UPDATE bookings SET status=$1 WHERE booking_id=$2 RETURNING *',
                 [status, id]
             );
             if (bookingResult.rows.length === 0) {
                 return res.status(404).json({ message: 'Booking not found' });
             }
             if (status === 'SUCCESS') {
-                const roomResult = await client.query(
-                    `UPDATE rooms 
+                const accResult = await client.query(
+                    `UPDATE accommodations 
                     SET available_units = available_units - 1 
-                    WHERE id=$1 AND available_units > 0 
+                    WHERE accommodation_id=$1 AND available_units > 0 
                     RETURNING *`,
-                    [room_id]
+                    [accommodation_id]
                 );
-                if (roomResult.rows.length === 0) {
+                if (accResult.rows.length === 0) {
                     return res.status(404).json({ message: 'No available units' });
                 }
             }
@@ -116,7 +116,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query(
-        'DELETE FROM bookings WHERE id=$1 RETURNING *',
+        'DELETE FROM bookings WHERE booking_id=$1 RETURNING *',
         [id]
         );
         if (result.rows.length === 0) {
