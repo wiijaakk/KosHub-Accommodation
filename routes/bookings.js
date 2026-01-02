@@ -16,11 +16,40 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { room_id, user_id, base_price, discount_applied, final_price, start_date, end_date, status } = req.body;
+    const user_id = req.user.id;
+    const { room_id, start_date, end_date } = req.body;
+    
     try {
+        const activeBooking = await pool.query(
+            `SELECT 1 FROM bookings 
+             WHERE user_id = $1 
+               AND status = 'SUCCESS' 
+               AND CURRENT_DATE BETWEEN start_date AND end_date`,
+            [user_id]
+        );
+        
+        if (activeBooking.rows.length > 0) {
+            return res.status(400).json({ message: 'You already have an active booking' });
+        }
+
+        const roomResult = await pool.query('SELECT price FROM rooms WHERE id = $1', [room_id]);
+        if (roomResult.rows.length === 0) {
+            return res.status(404).json({ message: 'Room not found' });
+        }
+        
+        const userResult = await pool.query('SELECT discount_rate FROM users WHERE id = $1', [user_id]);
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const base_price = roomResult.rows[0].price;
+        const discount_rate = userResult.rows[0].discount_rate || 0;
+        const discount_applied = base_price * discount_rate;
+        const final_price = base_price - discount_applied;
+
         const result = await pool.query(
             'INSERT INTO bookings (room_id, user_id, base_price, discount_applied, final_price, start_date, end_date, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-            [room_id, user_id, base_price, discount_applied, final_price, start_date, end_date, status]
+            [room_id, user_id, base_price, discount_applied, final_price, start_date, end_date, 'PENDING']
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -37,7 +66,7 @@ router.get('/:id', async (req, res) => {
         [id]
         );
         if (result.rows.length === 0) {
-        return res.status(404).json({ message: 'Accommodation not found' });
+        return res.status(404).json({ message: 'Booking Data not found' });
         }
         res.json(result.rows[0]);
     } catch (err) {
