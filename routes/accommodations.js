@@ -2,12 +2,11 @@ import express from 'express';
 import { pool } from '../db/pool.js';
 
 const router = express.Router();
-console.log(pool);
 
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM accommodations'
+      'SELECT * FROM accommodations JOIN rooms ON accommodations.id = rooms.accommodation_id WHERE rooms.available_units>0'
     );
     res.json(result.rows);
   } catch (err) {
@@ -34,7 +33,7 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      'SELECT * FROM accommodations WHERE id=$1',
+      'SELECT * FROM accommodations JOIN rooms ON accommodations.id = rooms.accommodation_id WHERE accommodations.id=$1',
       [id]
     );
     if (result.rows.length === 0) {
@@ -79,6 +78,21 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Accommodation deleted successfully' });
   }
   catch(err){
+    console.error(err);
+    res.status(500).json({ message: 'Database error' });
+  }
+});
+
+router.post('/:id/rooms/', async (req, res) => {
+  const { id } = req.params;
+  const { price, total_units, available_units } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO rooms (accommodation_id, price, total_units, available_units) VALUES ($1, $2, $3, $4) RETURNING *',
+      [id, price, total_units, available_units]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Database error' });
   }
