@@ -7,10 +7,7 @@ import { authenticateToken } from "./middleware/auth.js";
 import cors from 'cors';
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:3001',
-  credentials: true
-}));
+app.use(cors());
 const port = process.env.PORT;
 app.use(express.json());
 app.use('/auth', authRoutes);
@@ -41,7 +38,8 @@ app.get('/', (req, res) => {
       { method: 'POST', path: '/bookings', description: 'Create new booking' },
       { method: 'GET', path: '/bookings/:id', description: 'Get bookings by user id' },
       { method: 'PUT', path: '/bookings/:id', description: 'Update booking status' },
-      { method: 'DELETE', path: '/bookings/:id', description: 'Delete booking' }
+      { method: 'DELETE', path: '/bookings/:id', description: 'Delete booking' },
+      { method: 'PUT', path: '/bookings/active/:id', description: 'Mencari booking yang active berdasarkan user id' }
     ],
     note: 'All /users, /accommodations, /bookings endpoints require authentication token. See README.md for details.'
   });

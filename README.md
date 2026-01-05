@@ -117,6 +117,7 @@ docker-compose up --build
 | GET | `/bookings/:id` | Detail booking |
 | PUT | `/bookings/:id` | Update status booking |
 | DELETE | `/bookings/:id` | Hapus booking |
+| GET | `/bookings/active/:id` | List booking yang aktif |
 
 > API dalam Users, Accommodations, dan Bookings Membutuhkan Authorization header dengan Bearer token
 

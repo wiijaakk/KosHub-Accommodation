@@ -129,4 +129,27 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.get('/active/:id', async (req, res) => {
+    const user_id = req.params.id;
+    try {
+        const result = await pool.query(
+        `SELECT b.*, a.address, a.name as accommodation_name
+        FROM bookings b
+        LEFT JOIN accommodations a ON b.accommodation_id = a.accommodation_id
+        WHERE b.user_id = $1 
+        AND b.status = 'SUCCESS' 
+        AND CURRENT_DATE BETWEEN b.start_date AND b.end_date
+        LIMIT 1`,
+        [user_id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(403).json({ error: 'No active booking found. You need an active accommodation booking to use living support services.' });
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Database error' });
+    }
+});
+
 export default router;
