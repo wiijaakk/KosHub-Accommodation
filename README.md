@@ -91,7 +91,6 @@ docker-compose up --build
 |--------|----------|-------------|
 | POST | `/auth/login` | Login dengan email & password |
 | POST | `/auth/register` | Register user baru |
-| PUT | `/auth/change-password` | Ganti password |
 
 ### Users (`/users`)
 | Method | Endpoint | Description |
@@ -105,14 +104,12 @@ docker-compose up --build
 | GET | `/accommodations` | List semua akomodasi tersedia |
 | POST | `/accommodations` | Tambah akomodasi baru |
 | GET | `/accommodations/:id` | Detail akomodasi |
-| PUT | `/accommodations/:id` | Update akomodasi |
 
 ### Bookings (`/bookings`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/bookings` | List semua booking |
 | POST | `/bookings` | Buat booking baru |
-| GET | `/bookings/:id` | Detail booking |
 | PUT | `/bookings/:id` | Update status booking |
 | GET | `/bookings/active/:id` | List booking yang aktif |
 
