@@ -59,16 +59,16 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const { id } = req.params;
+    const user_id = req.params.id;
     try {
         const result = await pool.query(
-        'SELECT * FROM bookings WHERE bookings.booking_id=$1',
-        [id]
+        'SELECT * FROM bookings WHERE bookings.user_id=$1',
+        [user_id]
         );
         if (result.rows.length === 0) {
         return res.status(404).json({ message: 'Booking Data not found' });
         }
-        res.json(result.rows[0]);
+        res.json(result.rows);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Database error' });
