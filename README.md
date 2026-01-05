@@ -95,8 +95,7 @@ docker-compose up --build
 ### Users (`/users`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/users` | Get current user profile |
-| PUT | `/users` | Update profile & membership |
+| GET | `/users/:id` | Get current user profile |
 
 ### Accommodations (`/accommodations`)
 | Method | Endpoint | Description |
