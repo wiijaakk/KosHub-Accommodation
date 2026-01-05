@@ -98,7 +98,6 @@ docker-compose up --build
 |--------|----------|-------------|
 | GET | `/users` | Get current user profile |
 | PUT | `/users` | Update profile & membership |
-| DELETE | `/users` | Delete account |
 
 ### Accommodations (`/accommodations`)
 | Method | Endpoint | Description |
@@ -107,7 +106,6 @@ docker-compose up --build
 | POST | `/accommodations` | Tambah akomodasi baru |
 | GET | `/accommodations/:id` | Detail akomodasi |
 | PUT | `/accommodations/:id` | Update akomodasi |
-| DELETE | `/accommodations/:id` | Hapus akomodasi |
 
 ### Bookings (`/bookings`)
 | Method | Endpoint | Description |
@@ -116,7 +114,6 @@ docker-compose up --build
 | POST | `/bookings` | Buat booking baru |
 | GET | `/bookings/:id` | Detail booking |
 | PUT | `/bookings/:id` | Update status booking |
-| DELETE | `/bookings/:id` | Hapus booking |
 | GET | `/bookings/active/:id` | List booking yang aktif |
 
 > API dalam Users, Accommodations, dan Bookings Membutuhkan Authorization header dengan Bearer token
