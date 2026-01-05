@@ -18,6 +18,21 @@ app.use('/users', authenticateToken, userServices);
 app.use('/accommodations', authenticateToken, accommodationRoutes);
 app.use('/bookings', authenticateToken, bookingRoutes);
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to KosHub Accommodation API',
+    version: '1.0.0',
+    services: ['accommodation', 'bookings', 'users'],
+    endpoints: {
+      accommodations: 'GET /accommodations',
+      bookings: 'GET /bookings',
+      users: 'GET /users'
+    },
+    documentation: 'See README.md for complete API documentation',
+    note: 'All /api/* endpoints require authentication token and active booking (if applicable)'
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
