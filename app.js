@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     documentation: 'See README.md for complete API documentation',
     endpoints: [
-      // Authentication
       { method: 'POST', path: '/auth/login', description: 'Login with email & password' },
       { method: 'POST', path: '/auth/register', description: 'Register new user' },
       { method: 'PUT', path: '/auth/change-password', description: 'Change password' },
